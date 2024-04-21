@@ -1,0 +1,40 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class Student extends Person2 {
+    private int id;
+    private List<Course> schedule;
+
+    public Student(String familyName, String givenName, int id) {
+        super(familyName, givenName);
+        this.id = id;
+        this.schedule = new ArrayList<>();
+    }
+
+    public void addCourse(Course course) {
+        if (!schedule.contains(course)) {
+            this.schedule.add(course);
+            course.requestRegistration(this);
+        }
+    }
+
+    public boolean removeCourse(Course course) {
+        if (this.schedule.remove(course)) {
+            course.unregisterStudent(this);
+            return true;
+        }
+        return false;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getTotalCredits(List<Course> courses) {
+        int totalCredits = 0;
+        for (Course course : schedule) {
+            totalCredits += course.getCredits();
+        }
+        return totalCredits;
+    }
+}
