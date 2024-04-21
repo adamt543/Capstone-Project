@@ -1,0 +1,30 @@
+import java.util.List;
+
+public class Registry {
+    private static List<Person> people;
+    private static List<Course> courses;
+    private static List<Student> students;
+
+    public Registry(List<Person> people, List<Course> courses, List<Student> students) {
+        this.people = people;
+        this.courses = courses;
+        this.students = students;
+    }
+
+    public void createPerson(String firstName, String lastName, int birthYear, int birthMonth, int birthDay) {
+        new Person(firstName, lastName, birthYear, birthMonth, birthDay);
+    }
+//    public void createPerson(String firstName, String lastName) {
+//        new Person(firstName, lastName);
+//    }
+        
+    public static List<Person> getPeople() {
+        return people;
+    }
+    public static List<Course> getCourses() {
+        return courses;
+    }
+    public static List<Student> getStudents() {
+        return students;
+    }
+}
