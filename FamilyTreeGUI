@@ -1,51 +1,93 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class Children extends Person2 {
-    private List<Married> marriages = new ArrayList<>();
-    private static Map<Children, List<Children>> childrenMap = new HashMap<>();
+public class FamilyTreeGUI extends JFrame {
+    private JTextField nameField;
+    private JTextArea resultArea;
+    private JButton findChildrenButton, findMaternalTreeButton, findPaternalTreeButton;
+    private Registry registry;
 
-    public Children(String familyName, String givenName) {
-        super(familyName, givenName);
+
+
+    public FamilyTreeGUI() {
+        createUI();
+//        registry.createPerson("Adam","Tripi", 2002,12, 3);
     }
 
-    public void addMarriage(Married married) {
-        this.marriages.add(married);
+    private void createUI() {
+        setTitle("Family Tree Finder");
+        setSize(600, 400);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        nameField = new JTextField(20);
+        resultArea = new JTextArea(15, 50);
+        resultArea.setEditable(false);
+
+        findChildrenButton = new JButton("Find Children");
+        findMaternalTreeButton = new JButton("Maternal Tree");
+        findPaternalTreeButton = new JButton("Paternal Tree");
+
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Enter Name:"));
+        panel.add(nameField);
+        panel.add(findChildrenButton);
+        panel.add(findMaternalTreeButton);
+        panel.add(findPaternalTreeButton);
+        panel.add(new JScrollPane(resultArea));
+
+        add(panel);
+
+        findMaternalTreeButton.addActionListener(this::handleFindMaternalTree);
+        findPaternalTreeButton.addActionListener(this::handleFindPaternalTree);
+
     }
 
-    public static void addChild(Married married, Children child) {
-        Children mother = married.getMom();
-        Children father = married.getDad();
-        if (!childrenMap.containsKey(mother)) {
-            childrenMap.put(mother, new ArrayList<>());
+    private void handleFindMaternalTree(ActionEvent e) {
+        String nameToFind = nameField.getText();
+        boolean found = false;
+        for (Person person : registry.getPeople()) {
+            String name = (person.getFirstName() + " " + person.getLastName());
+            if (name.equals(nameToFind)) {
+                found = true;
+                resultArea.setText("Person " + nameToFind + " exists in the list.");
+                break;
+
+                //proof of concept that the code actually prints out something so if
+                //we could find a way to get it to print out a String of the trees we're set
+            }
         }
-        if (!childrenMap.containsKey(father)) {
-            childrenMap.put(father, new ArrayList<>());
+        if (!found) {
+            resultArea.setText("Person " + nameToFind + " does not exist in the list.");
         }
-        childrenMap.get(mother).add(child);
-        childrenMap.get(father).add(child);
     }
 
-    public List<Children> momFamilyTree() {
-        List<Children> momFamilyTree = new ArrayList<>();
-        List<Children> directChildren = childrenMap.getOrDefault(this, new ArrayList<>());
-        for (Children child : directChildren) {
-            momFamilyTree.add(child);
-            momFamilyTree.addAll(child.momFamilyTree());
-        }
-        return momFamilyTree;
+    private void handleFindPaternalTree(ActionEvent e) {
+        //same reqs as above
     }
+//
+//    private void displayResults(List<Children> results) {
+//        //displays results
+//    }
 
-    public List<Children> dadFamilyTree() {
-        List<Children> dadFamilyTree = new ArrayList<>();
-        List<Children> directChildren = childrenMap.getOrDefault(this, new ArrayList<>());
-        for (Children child : directChildren) {
-            dadFamilyTree.add(child);
-            dadFamilyTree.addAll(child.dadFamilyTree());
-        }
-        return dadFamilyTree;
+    public static void main(String[] args) {
+
+        List<Person> people = new ArrayList<>();
+        List<Course> courses = new ArrayList<>();
+        List<Student> students = new ArrayList<>();
+
+        Person tripiAdam = new Person("Adam", "Tripi",2002,12,03);
+
+        people.add(tripiAdam);
+
+        Registry registry1 = new Registry(people, courses, students);
+
+        SwingUtilities.invokeLater(() -> {
+            new FamilyTreeGUI().setVisible(true);
+        });
     }
 }
 
