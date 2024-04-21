@@ -1,0 +1,51 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Children extends Person2 {
+    private List<Married> marriages = new ArrayList<>();
+    private static Map<Children, List<Children>> childrenMap = new HashMap<>();
+
+    public Children(String familyName, String givenName) {
+        super(familyName, givenName);
+    }
+
+    public void addMarriage(Married married) {
+        this.marriages.add(married);
+    }
+
+    public static void addChild(Married married, Children child) {
+        Children mother = married.getMom();
+        Children father = married.getDad();
+        if (!childrenMap.containsKey(mother)) {
+            childrenMap.put(mother, new ArrayList<>());
+        }
+        if (!childrenMap.containsKey(father)) {
+            childrenMap.put(father, new ArrayList<>());
+        }
+        childrenMap.get(mother).add(child);
+        childrenMap.get(father).add(child);
+    }
+
+    public List<Children> momFamilyTree() {
+        List<Children> momFamilyTree = new ArrayList<>();
+        List<Children> directChildren = childrenMap.getOrDefault(this, new ArrayList<>());
+        for (Children child : directChildren) {
+            momFamilyTree.add(child);
+            momFamilyTree.addAll(child.momFamilyTree());
+        }
+        return momFamilyTree;
+    }
+
+    public List<Children> dadFamilyTree() {
+        List<Children> dadFamilyTree = new ArrayList<>();
+        List<Children> directChildren = childrenMap.getOrDefault(this, new ArrayList<>());
+        for (Children child : directChildren) {
+            dadFamilyTree.add(child);
+            dadFamilyTree.addAll(child.dadFamilyTree());
+        }
+        return dadFamilyTree;
+    }
+}
+
